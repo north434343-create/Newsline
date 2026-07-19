@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شريط الأخبار - Yodeck</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;display=swap">
+    <style>
+        /* ============================================
+           شريط الأخبار لـ Yodeck - صفحة جاهزة للإضافة
+
+           ✅ ارتفاع الصفحة: 1 سم (قابل للتعديل)
+           ✅ اتجاه الحركة: من اليسار إلى اليمين
+           ✅ الخط: Cairo عربي
+           ✅ متكيف مع أي حجم شاشة (Responsive)
+           ✅ كل العناصر موضحة وسهلة التعديل
+
+           ============================================ */
+        
+        :root {
+            --ticker-height: 1cm;       /* ارتفاع الصفحة (1 سم في البداية) */
+            --ticker-bg: #0f172a;       /* لون خلفية الشريط كاملاً */
+            --title-bg: #dc2626;        /* لون خلفية العنوان (الجزء الأيسر) */
+            --title-color: #ffffff;     /* لون نص العنوان */
+            --text-color: #f8fafc;      /* لون نص الأخبار */
+            --scroller-bg: #1e2937;     /* لون خلفية منطقة النصوص المتحركة */
+            --scroll-duration: 22s;     /* مدة الدورة الكاملة للحركة */
+        }
+
+        * {
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box;
+        }
+
+        /* إزالة أي فراغات إضافية من المتصفح */
+        html, body, div, span {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0;
+            vertical-align: top;
+        }
+
+        html, body {
+            height: var(--ticker-height) !important;
+            min-height: var(--ticker-height) !important;
+            max-height: var(--ticker-height) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            overflow: hidden !important;
+            font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+            background: var(--ticker-bg);
+            line-height: 1;
+            /* إزالة أي فراغ تحت الشريط */
+        }
+
+        body {
+            position: relative !important;
+            width: 100% !important;
+            height: var(--ticker-height) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* إزالة الفراغ تحت الشريط تماماً باستخدام position absolute */
+        .ticker-bar {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-sizing: border-box;
+        }
+
+        .ticker-bar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            background-color: var(--ticker-bg);
+            font-size: 15px;
+            line-height: 1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            /* إزالة أي فراغ داخلي أو خارجي */
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .title {
+            background-color: var(--title-bg);
+            color: var(--title-color);
+            padding: 0 18px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 15px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            z-index: 2;
+            box-shadow: 3px 0 6px rgba(0, 0, 0, 0.25);
+            letter-spacing: 0.5px;
+        }
+
+        .scroller {
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--scroller-bg);
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker-content {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            white-space: nowrap;
+            will-change: transform;
+            /* الحركة من اليسار إلى اليمين */
+            animation: scroll-right var(--scroll-duration) linear infinite;
+        }
+
+        /* حركة الشريط: النصوص تدخل من اليسار وتتحرك إلى اليمين */
+        @keyframes scroll-right {
+            from {
+                transform: translateX(-50%);
+            }
+            to {
+                transform: translateX(0%);
+            }
+        }
+
+        .news-item {
+            color: var(--text-color);
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .separator {
+            color: #64748b;
+            padding: 0 10px;
+            font-size: 0.9em;
+            user-select: none;
+        }
+
+        /* لجعل الشريط يتكيف مع أي حجم شاشة */
+        .ticker-bar {
+            min-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- الشريط الرئيسي -->
+    <div class="ticker-bar" id="ticker-bar">
+        
+        <!-- العنوان (الجزء الثابت على اليسار) -->
+        <div class="title" id="title">أخبار</div>
+        
+        <!-- منطقة التمرير -->
+        <div class="scroller" id="scroller">
+            <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+            <div class="ticker-content" id="ticker-content"></div>
+        </div>
+        
+    </div>
+
+    <script>
+        /* =====================================================
+           ⚙️  CONFIG - جميع العناصر القابلة للتعديل
+           =====================================================
+           
+           غيّر أي قيمة أدناه ثم أعد تحميل الصفحة لترى التغيير فوراً.
+           
+           العناصر المتاحة للتعديل:
+           • tickerHeight   → ارتفاع الشريط (1 سم في البداية)
+           • scrollSpeed    → سرعة الحركة (أكبر = أبطأ)
+           • tickerBg       → لون خلفية الشريط
+           • scrollerBg     → لون خلفية منطقة النص
+           • titleBg        → لون خلفية العنوان
+           • titleColor     → لون نص العنوان
+           • textColor      → لون نص الأخبار
+           • titleText      → نص العنوان
+           • newsItems      → محتوى الأخبار
+        */
+         const CONFIG = {
+            // ====================================================
+            // ⚙️  جميع العناصر التي يمكنك تعديلها بسهولة
+            // ====================================================
+
+            // 1. ارتفاع الصفحة / الشريط
+            //    ابدأ بـ "1cm" كما طلبت. يمكنك تغييره إلى "38px" أو "45px"
+            tickerHeight: "1cm",        // ← ارتفاع الشريط
+
+            // 2. سرعة الشريط (حركة من اليسار إلى اليمين)
+            //    قيمة أكبر = أبطأ
+            //    مثال: 15 = سريع جداً | 22 = متوسط | 35 = بطيء
+            scrollSpeed: 180,            // ← سرعة حركة النصوص
+
+            // 3. ألوان خلفية الشريط
+            tickerBg: "#0f172a",        // ← لون خلفية الشريط كامل
+            scrollerBg: "#1e2937",      // ← لون خلفية منطقة النصوص المتحركة
+
+            // 4. ألوان العنوان (الجزء الأيسر الثابت)
+            titleBg: "#dc2626",         // ← لون خلفية العنوان
+            titleColor: "#ffffff",      // ← لون نص العنوان
+
+            // 5. ألوان نص الأخبار
+            textColor: "#f8fafc",       // ← لون نص الأخبار المتحرك
+
+            // 6. حجم الخط
+            fontSize: "15px",
+
+            // 7. نص العنوان
+            titleText: "ㅤ‏أخبار المدرسةㅤ‏",
+
+            // 8. محتوى الأخبار (قائمة النصوص التي تظهر)
+            //    يمكنك إضافة أو حذف أو تعديل أي عنصر
+            //    الشريط يتحرك من اليسار إلى اليمين
+            newsItems: [
+                "🌟 عام دراسي جديد.. ابدأه بالجد والاجتهاد",
+                "✍️ حل واجباتك أولاً.. فالنجاح يبدأ بخطوة",
+                "📱 افتح منصة مدرستي كل يوم لتبقى متقدماً",
+                "❤️ مدرستنا بيتنا.. فلنجعلها مكاناً للنجاح والتميز",
+                "🏆 شارك في الأنشطة.. واكتشف مواهبك",
+                "👏 معلموك يفخرون بطالب مجتهد ومشارك",
+                "💻 لا تنسَ متابعة دروسك وواجباتك في منصة مدرستي",
+                "⭐ دخولك اليومي إلى منصة مدرستي يزيد من نجاحك",
+                "🤝 تعاون مع زملائك.. فالنجاح أجمل مع الفريق",
+                "📖 حضورك وانتباهك سر تفوقك"
+            ]
+        };
+
+        // تطبيق الإعدادات على الـ CSS Variables
+        function applyConfig() {
+            const root = document.documentElement;
+            const tickerBar = document.getElementById('ticker-bar');
+            const titleEl = document.getElementById('title');
+
+            // تطبيق الارتفاع والألوان
+            root.style.setProperty('--ticker-height', CONFIG.tickerHeight);
+            root.style.setProperty('--ticker-bg', CONFIG.tickerBg);
+            root.style.setProperty('--title-bg', CONFIG.titleBg);
+            root.style.setProperty('--title-color', CONFIG.titleColor);
+            root.style.setProperty('--text-color', CONFIG.textColor);
+            root.style.setProperty('--scroller-bg', CONFIG.scrollerBg);
+            root.style.setProperty('--scroll-duration', CONFIG.scrollSpeed + 's');
+
+            // حجم الخط
+            tickerBar.style.fontSize = CONFIG.fontSize;
+
+            // نص العنوان
+            titleEl.textContent = CONFIG.titleText;
+        }
+
+        // بناء محتوى الشريط المتحرك (مع التكرار للحركة السلسة)
+        function buildTickerContent() {
+            const content = document.getElementById('ticker-content');
+            content.innerHTML = '';
+            content.style.animation = 'none';
+
+            // دالة إنشاء مجموعة واحدة من الأخبار
+            function createNewsSet() {
+                CONFIG.newsItems.forEach((news, index) => {
+                    // عنصر الخبر
+                    const item = document.createElement('span');
+                    item.className = 'news-item';
+                    item.textContent = news;
+                    content.appendChild(item);
+
+                    // فاصل بين ⚪ا 🔘▪️لأخ🔴بار
+                    const separator = document.createElement('span');
+                    separator.className = 'separator';
+                    separator.innerHTML = 'ㅤ  ▪️ㅤ‏';
+                    content.appendChild(separator);
+                });
+            }
+
+            // إضافة مجموعتين متطابقتين للتمرير اللامتناهي
+            createNewsSet();
+            createNewsSet();
+
+            // إعادة تشغيل الأنيميشن بعد البناء
+            requestAnimationFrame(() => {
+                content.style.animation = `scroll-right ${CONFIG.scrollSpeed}s linear infinite`;
+            });
+        }
+
+        // إعادة تشغيل الحركة عند تغيير حجم الصفحة (للتكيف الكامل)
+        function setupResponsive() {
+            let resizeTimeout;
+
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                
+                resizeTimeout = setTimeout(() => {
+                    const content = document.getElementById('ticker-content');
+                    
+                    // إيقاف وإعادة تشغيل الأنيميشن للتكيف مع الحجم الجديد
+                    content.style.animation = 'none';
+                    void content.offsetWidth; // إجبار إعادة الحساب
+                    
+                    content.style.animation = `scroll-right ${CONFIG.scrollSpeed}s linear infinite`;
+                }, 80);
+            });
+        }
+
+        // دالة رئيسية لتهيئة الشريط
+        function initTicker() {
+            applyConfig();
+            buildTickerContent();
+            setupResponsive();
+
+            // جعل الإعدادات متاحة للتعديل من الكونسول (اختياري)
+            window.YODECK_NEWS_CONFIG = CONFIG;
+
+            // رسالة في الكونسول للمطور
+            console.log('%c[شريط الأخبار] تم التحميل بنجاح. يمكنك تعديل الإعدادات من window.YODECK_NEWS_CONFIG', 'color:#64748b');
+        }
+
+        // تشغيل الشريط
+        initTicker();
+    </script>
+</body>
+</html>
